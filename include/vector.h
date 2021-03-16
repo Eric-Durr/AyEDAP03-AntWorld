@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <vector>
 
@@ -11,6 +12,7 @@ private:
 
 public:
   CustomVector(int low_b = 0, int top_b = 0);
+  CustomVector(const CustomVector<T> &other);
   ~CustomVector(void);
 
   inline const int &low_boundry(void) const { return low_boundry_; }
@@ -25,9 +27,12 @@ public:
 
   void move_boundries(int low_b = 0, int top_b = 0);
 
+  void resize(int low_b = 0, int top_b = 0);
+
   const std::string to_string(void) const;
 
 private:
   void low_boundry(int low_b) { low_boundry_ = low_b; }
   void top_boundry(int top_b) { top_boundry_ = top_b; }
+  void generate_v_map(void);
 };

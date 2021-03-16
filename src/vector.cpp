@@ -4,17 +4,21 @@ template <class T>
 CustomVector<T>::CustomVector(int low_b, int top_b) : low_boundry_(low_b),
                                                       top_boundry_(top_b)
 {
-  v_map_ = new T[this->size()];
-  for (int i = 0; i < this->size(); i++)
-  {
-    v_map_[i] = 0;
-  }
+  generate_v_map();
+}
+
+template <class T>
+CustomVector<T>::CustomVector(const CustomVector<T> &other)
+{
+  this->low_boundry_ = other.low_boundry_;
+  this->top_boundry_ = other.top_boundry_;
+  generate_v_map();
 }
 
 template <class T>
 CustomVector<T>::~CustomVector(void)
 {
-  delete[] v_map_;
+  delete[] this->v_map_;
 }
 
 template <class T>
@@ -69,6 +73,12 @@ void CustomVector<T>::move_boundries(int low_b, int top_b)
 }
 
 template <class T>
+void CustomVector<T>::resize(int low_b, int top_b)
+{
+  move_boundries(low_b, top_b);
+}
+
+template <class T>
 const std::string CustomVector<T>::to_string(void) const
 {
   std::string output = "[ ";
@@ -79,4 +89,14 @@ const std::string CustomVector<T>::to_string(void) const
   output += "]";
 
   return output;
+}
+
+template <class T>
+void CustomVector<T>::generate_v_map()
+{
+  this->v_map_ = new T[this->size()];
+  for (int i = 0; i < this->size(); i++)
+  {
+    this->v_map_[i] = 0;
+  }
 }

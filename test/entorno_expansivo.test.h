@@ -1,13 +1,12 @@
 #include <vector>
 #include "../include/Catch2/catch.h"
 #include "../include/entorno_expansivo.h"
-#include "../include/entorno_infinito.h"
 
 SCENARIO("Basic environment instantiation and operations")
 {
   GIVEN("A 5 by 5 environment")
   {
-    ExpLangtonEnvironment my_env(5, 5);
+    ExpLangtonEnvironment my_env(5, 5, 2, 2);
     WHEN("Checked basic features")
     {
       int total_sz = my_env.size();
@@ -178,7 +177,7 @@ SCENARIO("Environment status handling and step trigger")
 {
   GIVEN("A 5 by 5 environment")
   {
-    ExpLangtonEnvironment my_env(5, 5);
+    ExpLangtonEnvironment my_env(5, 5, 2, 2);
     WHEN("Taking one running step")
     {
       my_env.step(1);
@@ -226,16 +225,17 @@ SCENARIO("Environment status handling and step trigger")
       {
         // By default all slots are white
         CHECK(my_env.all_white() == false);
-        CHECK(my_env.ant_at() == std::vector<int>{1, 2});
-        CHECK(my_env.ant_facing() == UP);
+        CHECK(my_env.ant_at() == std::vector<int>{4, 4});
+        CHECK(my_env.ant_facing() == UR);
         CHECK(my_env.to_string() ==
               "\n"
               "┌───────────────┐\n"
               "│               │\n"
-              "│       ↑       │\n"
-              "│          x    │\n"
-              "│       x  x    │\n"
               "│               │\n"
+              "│       x       │\n"
+              "│    x          │\n"
+              "│    x        ↗ │\n"
+              "│       x  x    │\n"
               "└───────────────┘\n");
       }
     }
@@ -243,7 +243,6 @@ SCENARIO("Environment status handling and step trigger")
 
   GIVEN("A 5 by 5 environment with the ant facing left and at the bottom")
   {
-
     ExpLangtonEnvironment my_env(5, 5, 4, 2);
     WHEN("Taking one step")
     {
@@ -256,8 +255,8 @@ SCENARIO("Environment status handling and step trigger")
       {
         // By default all slots are white
         CHECK(my_env.all_white() == false);
-        CHECK(my_env.ant_at() == std::vector<int>{5, 2});
-        CHECK(my_env.ant_facing() == DO);
+        CHECK(my_env.ant_at() == std::vector<int>{5, 1});
+        CHECK(my_env.ant_facing() == DL);
         CHECK(my_env.to_string() ==
               "\n"
               "┌───────────────┐\n"
@@ -266,7 +265,7 @@ SCENARIO("Environment status handling and step trigger")
               "│               │\n"
               "│               │\n"
               "│       x       │\n"
-              "│       ↓       │\n"
+              "│    ↙          │\n"
               "└───────────────┘\n");
       }
     }
@@ -286,14 +285,14 @@ SCENARIO("Environment status handling and step trigger")
       {
         // By default all slots are white
         CHECK(my_env.all_white() == false);
-        CHECK(my_env.ant_at() == std::vector<int>{2, 0});
-        CHECK(my_env.ant_facing() == LE);
+        CHECK(my_env.ant_at() == std::vector<int>{1, 0});
+        CHECK(my_env.ant_facing() == LU);
         CHECK(my_env.to_string() ==
               "\n"
               "┌──────────────────┐\n"
               "│                  │\n"
-              "│                  │\n"
-              "│ ←  x             │\n"
+              "│ ↖                │\n"
+              "│    x             │\n"
               "│                  │\n"
               "│                  │\n"
               "└──────────────────┘\n");
@@ -315,12 +314,12 @@ SCENARIO("Environment status handling and step trigger")
       {
         // By default all slots are white
         CHECK(my_env.all_white() == false);
-        CHECK(my_env.ant_at() == std::vector<int>{0, 2});
-        CHECK(my_env.ant_facing() == UP);
+        CHECK(my_env.ant_at() == std::vector<int>{0, 3});
+        CHECK(my_env.ant_facing() == UR);
         CHECK(my_env.to_string() ==
               "\n"
               "┌───────────────┐\n"
-              "│       ↑       │\n"
+              "│          ↗    │\n"
               "│       x       │\n"
               "│               │\n"
               "│               │\n"
@@ -345,15 +344,15 @@ SCENARIO("Environment status handling and step trigger")
       {
         // By default all slots are white
         CHECK(my_env.all_white() == false);
-        CHECK(my_env.ant_at() == std::vector<int>{2, 5});
-        CHECK(my_env.ant_facing() == RI);
+        CHECK(my_env.ant_at() == std::vector<int>{3, 5});
+        CHECK(my_env.ant_facing() == RD);
         CHECK(my_env.to_string() ==
               "\n"
               "┌──────────────────┐\n"
               "│                  │\n"
               "│                  │\n"
-              "│             x  → │\n"
-              "│                  │\n"
+              "│             x    │\n"
+              "│                ↘ │\n"
               "│                  │\n"
               "└──────────────────┘\n");
       }

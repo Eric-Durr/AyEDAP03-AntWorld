@@ -13,6 +13,6 @@
 
 #define CATCH_CONFIG_MAIN
 #include "../include/Catch2/catch.h"
-#include "entorno_expansivo.test.h"
+//#include "entorno_expansivo.test.h"
 //#include "hormiga.test.h"
 //#include "vector.test.h"

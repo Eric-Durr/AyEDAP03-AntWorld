@@ -19,20 +19,20 @@
 #include <string>
 
 #include "hormiga.h"
+#include "vector.h"
 
 class ExpLangtonEnvironment
 {
 private:
   int cols_, rows_;
-  std::vector<std::vector<direction_color>> grid_;
+  CustomVector<CustomVector<direction_color>> grid_;
   LangtonAnt ant_;
-
   int steps_;
 
 public:
   ExpLangtonEnvironment(const int &n_rows, const int &n_cols,
-                        const int &ant_pos_i = -1,
-                        const int &ant_pos_j = -1,
+                        const int &ant_pos_i,
+                        const int &ant_pos_j,
                         const direction &ant_dir = LE);
 
   inline const int size(void) const
@@ -52,6 +52,9 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const ExpLangtonEnvironment &this_object);
 
+  const CustomVector<direction_color> &operator[](int i) const { return this->grid_[i]; };
+  CustomVector<direction_color> &operator[](int i) { return this->grid_[i]; };
+
 private:
   void add_col_right(const int &n);
   void add_col_left(const int &n);
@@ -62,4 +65,10 @@ private:
   const bool ant_hit_right(void) const;
   const bool ant_hit_down(void) const;
   const bool ant_hit_left(void) const;
+
+  void init_grid(CustomVector<CustomVector<direction_color>> &grid, int rows, int cols);
+
+  CustomVector<CustomVector<direction_color>> copy_state(
+      CustomVector<CustomVector<direction_color>> &new_grid,
+      const int &offset_n, const int &offset_m);
 };

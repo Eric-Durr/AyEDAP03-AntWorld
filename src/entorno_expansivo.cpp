@@ -22,34 +22,20 @@ ExpLangtonEnvironment::ExpLangtonEnvironment(const int &n_rows, const int &n_col
                                              const direction &ant_dir)
     : cols_(n_cols), rows_(n_rows), steps_(0)
 {
-
-  if (ant_pos_i == -1 || ant_pos_j == -1)
-  {
-    ant_ = LangtonAnt{rows_ / 2, cols_ / 2, ant_dir}; // Default value (middle)
-  }
-  else
-  {
-    ant_ = LangtonAnt{ant_pos_i, ant_pos_j, ant_dir};
-  }
-
-  // Setting the grid to all
-  for (int i = 0; i < n_rows; i++)
-  {
-    std::vector<direction_color> aux;
-    for (int j = 0; j < n_cols; j++)
-    {
-      aux.push_back(WH);
-    }
-    grid_.push_back(aux);
-  }
+  init_grid(this->grid_, this->rows_, this->cols_);
+  ant_ = LangtonAnt{ant_pos_i, ant_pos_j, ant_dir};
 }
 
 const bool ExpLangtonEnvironment::all_white(void) const
 {
-  for (auto row : this->grid_)
-    for (auto col : row)
-      if (col == BL)
+  for (int i = 0; i < this->rows_; i++)
+  {
+    for (int j = 0; j < this->cols_; j++)
+    {
+      if (this->grid_[i][j] == BL)
         return false;
+    }
+  }
 
   return true;
 }
@@ -132,115 +118,50 @@ std::ostream &operator<<(std::ostream &os, const ExpLangtonEnvironment &this_obj
 
 void ExpLangtonEnvironment::add_col_right(const int &n)
 {
-  std::vector<std::vector<direction_color>> new_grid;
-  // Creating new grid;
-  for (int i = 0; i < rows_; i++)
-  {
-    std::vector<direction_color> aux;
-    for (int j = 0; j < cols_ + n; j++)
-    {
-      aux.push_back(WH);
-    }
-    new_grid.push_back(aux);
-  }
-
-  // state copy
-  for (int i = 0; i < rows_; i++)
-  {
-    for (int j = 0; j < cols_; j++)
-    {
-      new_grid[i][j] = grid_[i][j];
-    }
-  }
-
+  CustomVector<CustomVector<direction_color>> new_grid;
+  init_grid(new_grid, this->rows_, this->cols_ + n);
+  copy_state(new_grid, 0, n);
   // variable update
-  cols_ += n;
-  grid_ = new_grid;
+  this->grid_ = new_grid;
+  this->cols_ += n;
 }
 
 void ExpLangtonEnvironment::add_col_left(const int &n)
 {
-  std::vector<std::vector<direction_color>> new_grid;
-  // Creating new grid;
-  for (int i = 0; i < rows_; i++)
-  {
-    std::vector<direction_color> aux;
-    for (int j = 0; j < cols_ + n; j++)
-    {
-      aux.push_back(WH);
-    }
-    new_grid.push_back(aux);
-  }
 
-  // state copy
-  for (int i = 0; i < rows_; i++)
-  {
-    for (int j = 0; j < cols_; j++)
-    {
-      new_grid[i][j + n] = grid_[i][j];
-    }
-  }
-
+  CustomVector<CustomVector<direction_color>> new_grid;
+  init_grid(new_grid, this->rows_, this->cols_ + n);
+  copy_state(new_grid, 0, n);
   // variable update
-  cols_ += n;
-  grid_ = new_grid;
+  this->grid_ = new_grid;
+  this->cols_ += n;
+
   ant_.mod_pos(this->ant_at()[0], this->ant_at()[1] + n);
 }
 
 void ExpLangtonEnvironment::add_row_down(const int &n)
 {
-  std::vector<std::vector<direction_color>> new_grid;
-  // Creating new grid;
-  for (int i = 0; i < rows_ + n; i++)
-  {
-    std::vector<direction_color> aux;
-    for (int j = 0; j < cols_; j++)
-    {
-      aux.push_back(WH);
-    }
-    new_grid.push_back(aux);
-  }
-
-  // state copy
-  for (int i = 0; i < rows_; i++)
-  {
-    for (int j = 0; j < cols_; j++)
-    {
-      new_grid[i][j] = grid_[i][j];
-    }
-  }
-
+  CustomVector<CustomVector<direction_color>> new_grid;
+  init_grid(new_grid, this->rows_ + n, this->cols_);
+  copy_state(new_grid, n, 0);
   // variable update
+  this->grid_ = new_grid;
+  this->rows_ += n;
   rows_ += n;
   grid_ = new_grid;
 }
 
 void ExpLangtonEnvironment::add_row_up(const int &n)
 {
-  std::vector<std::vector<direction_color>> new_grid;
-  // Creating new grid;
-  for (int i = 0; i < rows_ + n; i++)
-  {
-    std::vector<direction_color> aux;
-    for (int j = 0; j < cols_; j++)
-    {
-      aux.push_back(WH);
-    }
-    new_grid.push_back(aux);
-  }
-
-  // state copy
-  for (int i = 0; i < rows_; i++)
-  {
-    for (int j = 0; j < cols_; j++)
-    {
-      new_grid[i + n][j] = grid_[i][j];
-    }
-  }
-
+  CustomVector<CustomVector<direction_color>> new_grid;
+  init_grid(new_grid, this->rows_ + n, this->cols_);
+  copy_state(new_grid, n, 0);
   // variable update
+  this->grid_ = new_grid;
+  this->rows_ += n;
   rows_ += n;
   grid_ = new_grid;
+
   ant_.mod_pos(this->ant_at()[0] + n, this->ant_at()[1]);
 }
 
@@ -259,4 +180,31 @@ const bool ExpLangtonEnvironment::ant_hit_down(void) const
 const bool ExpLangtonEnvironment::ant_hit_left(void) const
 {
   return this->ant_at()[1] < 0;
+}
+
+void ExpLangtonEnvironment::init_grid(CustomVector<CustomVector<direction_color>> &grid, int rows, int cols)
+{
+
+  grid.resize(0, rows);
+  for (int i = 0; i < this->rows_; i++)
+  {
+    grid[i].resize(0, cols);
+    for (int j = 0; j < this->cols_; j++)
+    {
+      grid[i][j] = WH;
+    }
+  }
+}
+
+CustomVector<CustomVector<direction_color>> ExpLangtonEnvironment::copy_state(
+    CustomVector<CustomVector<direction_color>> &new_grid,
+    const int &offset_n, const int &offset_m)
+{
+  for (int i = this->grid_.low_boundry(); i < this->grid_.top_boundry(); i++)
+  {
+    for (int j = this->grid_[i].low_boundry(); j < this->grid_[i].top_boundry(); j++)
+    {
+      new_grid[i + offset_n][j + offset_n] = this->grid_[i][j];
+    }
+  }
 }
